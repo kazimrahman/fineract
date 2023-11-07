@@ -199,4 +199,9 @@ public class SavingsApiConstants {
     public static final String ERROR_MSG_SAVINGS_ACCOUNT_NOT_ACTIVE = "not.in.active.state";
 
     public static final String accountMappingForPaymentParamName = "accountMappingForPayment";
+
+    // Birth Date constants
+    public static final int monthIndex = 0;
+    public static final int dayIndex = 1;
+    public static final String birthDateFormatDelimiter = "-";
 }

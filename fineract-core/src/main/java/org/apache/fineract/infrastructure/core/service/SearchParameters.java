@@ -26,6 +26,7 @@ public final class SearchParameters {
     private final Long officeId;
     private final String externalId;
     private final String name;
+    private final String dateOfBirth;
     private final String hierarchy;
     private final String firstname;
     private final String lastname;
@@ -181,7 +182,7 @@ public final class SearchParameters {
         return new SearchParameters(provisioningEntryId, officeId, productId, categoryId, offset, limit);
     }
 
-    public static SearchParameters forSavings(final String sqlSearch, final String externalId, final Integer offset, final Integer limit,
+    public static SearchParameters forSavings(final String sqlSearch, final String externalId, final String clientDateOfBirth, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder) {
 
         final Integer maxLimitAllowed = getCheckedLimit(limit);
@@ -193,7 +194,7 @@ public final class SearchParameters {
         final boolean isSelfUser = false;
 
         return new SearchParameters(sqlSearch, null, externalId, null, null, null, null, offset, maxLimitAllowed, orderBy, sortOrder,
-                staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser);
+                staffId, accountNo, loanId, savingsId, orphansOnly, isSelfUser, clientDateOfBirth);
     }
 
     public static SearchParameters forAccountTransfer(final String sqlSearch, final String externalId, final Integer offset,
@@ -244,6 +245,35 @@ public final class SearchParameters {
     }
 
     private SearchParameters(final String sqlSearch, final Long officeId, final String externalId, final String name,
+                             final String hierarchy, final String firstname, final String lastname, final Integer offset, final Integer limit,
+                             final String orderBy, final String sortOrder, final Long staffId, final String accountNo, final Long loanId,
+                             final Long savingsId, final Boolean orphansOnly, boolean isSelfUser, final String dateOfBirth) {
+        this.sqlSearch = sqlSearch;
+        this.officeId = officeId;
+        this.externalId = externalId;
+        this.name = name;
+        this.hierarchy = hierarchy;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.offset = offset;
+        this.limit = limit;
+        this.orderBy = orderBy;
+        this.sortOrder = sortOrder;
+        this.staffId = staffId;
+        this.accountNo = accountNo;
+        this.loanId = loanId;
+        this.savingsId = savingsId;
+        this.orphansOnly = orphansOnly;
+        this.currencyCode = null;
+        this.provisioningEntryId = null;
+        this.productId = null;
+        this.categoryId = null;
+        this.isSelfUser = isSelfUser;
+        this.status = null;
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    private SearchParameters(final String sqlSearch, final Long officeId, final String externalId, final String name,
             final String hierarchy, final String firstname, final String lastname, final Integer offset, final Integer limit,
             final String orderBy, final String sortOrder, final Long staffId, final String accountNo, final Long loanId,
             final Long savingsId, final Boolean orphansOnly, boolean isSelfUser) {
@@ -269,7 +299,36 @@ public final class SearchParameters {
         this.categoryId = null;
         this.isSelfUser = isSelfUser;
         this.status = null;
+        this.dateOfBirth = null;
+    }
 
+    private SearchParameters(final String sqlSearch, final String dateOfBirth, final Long officeId, final String externalId, final String name,
+                             final String hierarchy, final String firstname, final String lastname, final String status, final Integer offset,
+                             final Integer limit, final String orderBy, final String sortOrder, final Long staffId, final String accountNo,
+                             final Long loanId, final Long savingsId, final Boolean orphansOnly, boolean isSelfUser) {
+        this.sqlSearch = sqlSearch;
+        this.officeId = officeId;
+        this.externalId = externalId;
+        this.name = name;
+        this.hierarchy = hierarchy;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.offset = offset;
+        this.limit = limit;
+        this.orderBy = orderBy;
+        this.sortOrder = sortOrder;
+        this.staffId = staffId;
+        this.accountNo = accountNo;
+        this.loanId = loanId;
+        this.savingsId = savingsId;
+        this.orphansOnly = orphansOnly;
+        this.currencyCode = null;
+        this.provisioningEntryId = null;
+        this.productId = null;
+        this.categoryId = null;
+        this.isSelfUser = isSelfUser;
+        this.status = status;
+        this.dateOfBirth = dateOfBirth;
     }
 
     private SearchParameters(final String sqlSearch, final Long officeId, final String externalId, final String name,
@@ -298,7 +357,7 @@ public final class SearchParameters {
         this.categoryId = null;
         this.isSelfUser = isSelfUser;
         this.status = status;
-
+        this.dateOfBirth = null;
     }
 
     private SearchParameters(final Long officeId, final String externalId, final String name, final String hierarchy,
@@ -327,6 +386,7 @@ public final class SearchParameters {
         this.categoryId = null;
         this.isSelfUser = isSelfUser;
         this.status = null;
+        this.dateOfBirth = null;
     }
 
     private SearchParameters(final Long provisioningEntryId, final Long officeId, final Long productId, final Long categoryId,
@@ -353,6 +413,7 @@ public final class SearchParameters {
         this.categoryId = categoryId;
         this.isSelfUser = false;
         this.status = null;
+        this.dateOfBirth = null;
 
     }
 
@@ -382,6 +443,7 @@ public final class SearchParameters {
         this.categoryId = null;
         this.isSelfUser = false;
         this.status = null;
+        this.dateOfBirth = null;
 
     }
 
@@ -451,6 +513,10 @@ public final class SearchParameters {
 
     public String getHierarchy() {
         return this.hierarchy;
+    }
+
+    public String getDateOfBirth() {
+        return this.dateOfBirth;
     }
 
     public String getFirstname() {

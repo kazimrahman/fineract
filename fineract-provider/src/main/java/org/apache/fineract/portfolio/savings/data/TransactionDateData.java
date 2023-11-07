@@ -30,5 +30,6 @@ public class TransactionDateData {
 
     public TransactionDateData(final LocalDate date) {
         this.date = date;
+
     }
 }

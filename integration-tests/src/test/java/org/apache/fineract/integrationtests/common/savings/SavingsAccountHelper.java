@@ -169,6 +169,11 @@ public class SavingsAccountHelper extends IntegrationTest {
                 savingsApplicationJSON, responseAttribute);
     }
 
+    public Integer getSavingsAccountsByBirthday(final RequestSpecification requestSpec, final ResponseSpecification responseSpec) {
+        final String url = SAVINGS_ACCOUNT_URL + "?" + Utils.TENANT_IDENTIFIER + "?" + CLIENT_DOB_PARAM;
+        return Utils.performServerGet(requestSpec, responseSpec, url, "totalFilteredRecords");
+    }
+
     public HashMap updateSavingsAccount(final Integer id, final Integer savingsProductID, final Integer savingsId,
             final String accountType) {
         final String savingsApplicationJSON = new SavingsApplicationTestBuilder() //

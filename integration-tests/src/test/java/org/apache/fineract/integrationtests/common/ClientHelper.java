@@ -350,6 +350,7 @@ public class ClientHelper extends IntegrationTest {
         HashMap<String, Object> map = setInitialClientValues(officeId, LEGALFORM_ID_PERSON);
         map.put("active", "true");
         map.put("activationDate", dateOfJoining);
+        map.put("dateOfBirth", dateOfJoining);
         final String testClientAsJson = GSON.toJson(map);
         log.info("TestClient Request :  {}", testClientAsJson);
         return testClientAsJson;

@@ -25,6 +25,8 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,12 +64,7 @@ import org.apache.fineract.portfolio.group.data.GroupGeneralData;
 import org.apache.fineract.portfolio.group.service.GroupReadPlatformService;
 import org.apache.fineract.portfolio.paymentdetail.data.PaymentDetailData;
 import org.apache.fineract.portfolio.paymenttype.data.PaymentTypeData;
-import org.apache.fineract.portfolio.savings.DepositAccountType;
-import org.apache.fineract.portfolio.savings.SavingsCompoundingInterestPeriodType;
-import org.apache.fineract.portfolio.savings.SavingsInterestCalculationDaysInYearType;
-import org.apache.fineract.portfolio.savings.SavingsInterestCalculationType;
-import org.apache.fineract.portfolio.savings.SavingsPeriodFrequencyType;
-import org.apache.fineract.portfolio.savings.SavingsPostingInterestPeriodType;
+import org.apache.fineract.portfolio.savings.*;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountApplicationTimelineData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountChargeData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
@@ -196,9 +193,8 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         sqlBuilder.append(" join m_office o on o.id = c.office_id");
         sqlBuilder.append(" where o.hierarchy like ?");
 
-        final Object[] objectArray = new Object[2];
-        objectArray[0] = hierarchySearchString;
-        int arrayPos = 1;
+        List<Object> queryArgs = new ArrayList<>();
+        queryArgs.add(hierarchySearchString);
         if (searchParameters != null) {
             String sqlQueryCriteria = searchParameters.getSqlSearch();
             if (StringUtils.isNotBlank(sqlQueryCriteria)) {
@@ -209,13 +205,18 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
 
             if (StringUtils.isNotBlank(searchParameters.getExternalId())) {
                 sqlBuilder.append(" and sa.external_id = ?");
-                objectArray[arrayPos] = searchParameters.getExternalId();
-                arrayPos = arrayPos + 1;
+                queryArgs.add(searchParameters.getExternalId());
             }
+
+            if (!StringUtils.isEmpty(searchParameters.getDateOfBirth())) {
+                // The Format for DOB should be MM-DD
+                sqlBuilder.append("and MONTH(c.date_of_birth) = ? and DAY(c.date_of_birth) = ?");
+                populateBirthMonthAndDay(searchParameters.getDateOfBirth(), queryArgs);
+            }
+
             if (searchParameters.getOfficeId() != null) {
                 sqlBuilder.append("and c.office_id =?");
-                objectArray[arrayPos] = searchParameters.getOfficeId();
-                arrayPos = arrayPos + 1;
+                queryArgs.add(searchParameters.getOfficeId());
             }
             if (searchParameters.isOrderByRequested()) {
                 sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
@@ -236,8 +237,25 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
                 }
             }
         }
-        final Object[] finalObjectArray = Arrays.copyOf(objectArray, arrayPos);
+        final Object[] finalObjectArray = queryArgs.toArray();
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), finalObjectArray, this.savingAccountMapper);
+    }
+
+    private void populateBirthMonthAndDay(final String dateOfBirth, List<Object> queryArgs) {
+        int month = 0;
+        int day = 0;
+        if(isValidDateOfBirthFormat(dateOfBirth)) {
+            String[] birthMonthAndDay = dateOfBirth.split(SavingsApiConstants.birthDateFormatDelimiter);
+            month = Integer.parseInt(birthMonthAndDay[SavingsApiConstants.monthIndex]);
+            day = Integer.parseInt(birthMonthAndDay[SavingsApiConstants.dayIndex]);
+        }
+        queryArgs.add(month);
+        queryArgs.add(day);
+    }
+
+    private boolean isValidDateOfBirthFormat(final String date) {
+        // Date format should be MM-DD
+        return date.split(SavingsApiConstants.birthDateFormatDelimiter).length == 2;
     }
 
     @Override
@@ -748,7 +766,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
             final StringBuilder sqlBuilder = new StringBuilder(400);
             sqlBuilder.append("sa.id as id, sa.account_no as accountNo, sa.external_id as externalId, ");
             sqlBuilder.append("sa.deposit_type_enum as depositType, ");
-            sqlBuilder.append("c.id as clientId, c.display_name as clientName, ");
+            sqlBuilder.append("c.id as clientId, c.display_name as clientName, "); //kazi
             sqlBuilder.append("g.id as groupId, g.display_name as groupName, ");
             sqlBuilder.append("sp.id as productId, sp.name as productName, ");
             sqlBuilder.append("s.id fieldOfficerId, s.display_name as fieldOfficerName, ");

@@ -1,0 +1,9 @@
+diff a/integration-tests/src/test/java/org/apache/fineract/integrationtests/common/savings/SavingsAccountHelper.java b/integration-tests/src/test/java/org/apache/fineract/integrationtests/common/savings/SavingsAccountHelper.java	(rejected hunks)
+@@ -93,6 +93,7 @@ public class SavingsAccountHelper {
+     public static final String LAST_TRANSACTION_DATE = "01 March 2013";
+     public static final String ACCOUNT_TYPE_INDIVIDUAL = "INDIVIDUAL";
+     public static final Integer PAYMENT_TYPE_ID = 1;
++    public static final String CLIENT_DOB_PARAM = "clientDateOfBirth=03-04";
+ 
+     public static final String DATE_TIME_FORMAT = "dd MMMM yyyy HH:mm";
+     private static final Boolean IS_BLOCK = false;
